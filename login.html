@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AppRopa</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <div style="max-width: 500px; margin: 50px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <h2 style="text-align: center; margin-bottom: 30px;"> Iniciar Sesion</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Correo electronico</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="password" class="form-control" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Ingresar</button>
+            </form>
+            
+            <div id="mensaje" style="margin-top: 20px;"></div>
+            
+            <p style="text-align: center; margin-top: 20px;">
+                ¿No tienes cuenta? <a href="registrar.html">Registrate</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/users/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('usuarioId', result.usuarioId);
+                    localStorage.setItem('usuarioNombre', result.nombre);
+                    
+                    document.getElementById('mensaje').innerHTML = 
+                        '<div class="alert alert-success"> Login exitoso. Redirigiendo...</div>';
+                    setTimeout(() => {
+                        window.location.href = 'menu_principal.html';
+                    }, 1000);
+                } else {
+                    document.getElementById('mensaje').innerHTML = 
+                        `<div class="alert alert-danger"> ${result.mensaje || 'Credenciales incorrectas'}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('mensaje').innerHTML = 
+                    `<div class="alert alert-danger"> Error de conexión: ${error.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Closet - AppRopa</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="navbar">
+        <h2>👔 AppRopa</h2>
+        <div>
+            <span id="userName"></span>
+            <a href="menu_principal.html">Inicio</a>
+            <a href="closet.html">Mi Closet</a>
+            <a href="subir_prenda.html">+ Prenda</a>
+            <a href="generar_outfit.html">Generar</a>
+            <a href="red_social.html">Red Social</a>
+            <a href="#" onclick="logout()">Cerrar Sesión</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2> Mi Armario Digital</h2>
+        <a href="subir_prenda.html" class="btn btn-primary" style="margin-bottom: 20px;">+ Agregar Prenda</a>
+        
+        <div id="prendasContainer" class="grid-3"></div>
+    </div>
+    
+    <script src="js/script.js"></script>
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        const usuarioId = localStorage.getItem('usuarioId');
+        
+        if (!usuarioId) {
+            window.location.href = 'login.html';
+        }
+        
+        document.getElementById('userName').innerHTML = `👤 ${localStorage.getItem('usuarioNombre')} | `;
+        
+        async function cargarPrendas() {
+            try {
+                const response = await fetch(`${API_URL}/prendas/usuario/${usuarioId}`);
+                const prendas = await response.json();
+                
+                const container = document.getElementById('prendasContainer');
+                
+                if (prendas.length === 0) {
+                    container.innerHTML = '<div class="alert alert-info">No tienes prendas en tu closet. ¡Agrega algunas!</div>';
+                    return;
+                }
+                
+                const emojiTipo = {
+                    'superior': '👕',
+                    'inferior': '👖',
+                    'calzado': '👞'
+                };
+                
+                container.innerHTML = prendas.map(prenda => `
+                    <div class="prenda-card">
+                        <img src="${prenda.imagen_url}" onerror="this.src='https://via.placeholder.com/300x200?text=Sin+Imagen'">
+                        <div class="info">
+                            <p><strong>${emojiTipo[prenda.tipo] || '👔'} ${prenda.tipo}</strong></p>
+                            <p> Estilo: ${prenda.estilo}</p>
+                            <p> Color: ${prenda.color_categoria}</p>
+                            <small>ID: ${prenda.id}</small>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                document.getElementById('prendasContainer').innerHTML = 
+                    `<div class="alert alert-danger">Error al cargar: ${error.message}</div>`;
+            }
+        }
+        
+        cargarPrendas();
+    </script>
+</body>
+</html>

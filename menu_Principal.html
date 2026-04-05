@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Principal - AppRopa</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="navbar">
+        <h2>👔 AppRopa</h2>
+        <div>
+            <span id="userName"></span>
+            <a href="menu_principal.html">Inicio</a>
+            <a href="closet.html">Mi Closet</a>
+            <a href="subir_prenda.html">+ Prenda</a>
+            <a href="generar_outfit.html">Generar</a>
+            <a href="red_social.html">Red Social</a>
+            <a href="#" onclick="logout()">Cerrar Sesión</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div style="text-align: center; padding: 40px;">
+            <h1>¡Bienvenido, <span id="bienvenidaNombre"></span>!</h1>
+            <p style="font-size: 18px;">¿Qué deseas hacer hoy?</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 40px;">
+                <div class="prenda-card" style="padding: 30px; text-align: center; cursor: pointer;" onclick="window.location.href='closet.html'">
+                    <div style="font-size: 48px;">👕</div>
+                    <h3>Mi Closet</h3>
+                    <p>Ver todas mis prendas guardadas</p>
+                </div>
+                
+                <div class="prenda-card" style="padding: 30px; text-align: center; cursor: pointer;" onclick="window.location.href='subir_prenda.html'">
+                    <div style="font-size: 48px;">📸</div>
+                    <h3>Agregar Prenda</h3>
+                    <p>Subir nueva ropa a mi armario</p>
+                </div>
+                
+                <div class="prenda-card" style="padding: 30px; text-align: center; cursor: pointer;" onclick="window.location.href='generar_outfit.html'">
+                    <div style="font-size: 48px;">🤖</div>
+                    <h3>Generar Outfit</h3>
+                    <p>Recibir sugerencias automáticas</p>
+                </div>
+                
+                <div class="prenda-card" style="padding: 30px; text-align: center; cursor: pointer;" onclick="window.location.href='red_social.html'">
+                    <div style="font-size: 48px;">🌍</div>
+                    <h3>Red Social</h3>
+                    <p>Ver outfits de otros usuarios</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/script.js"></script>
+    <script>
+        const usuarioId = localStorage.getItem('usuarioId');
+        const usuarioNombre = localStorage.getItem('usuarioNombre');
+        
+        if (!usuarioId) {
+            window.location.href = 'login.html';
+        }
+        
+        document.getElementById('userName').innerHTML = `👤 ${usuarioNombre || 'Usuario'} | `;
+        document.getElementById('bienvenidaNombre').innerHTML = usuarioNombre || 'Usuario';
+    </script>
+</body>
+</html>

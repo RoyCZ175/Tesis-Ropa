@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Prenda - AppRopa</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="navbar">
+        <h2>👔 AppRopa</h2>
+        <div>
+            <span id="userName"></span>
+            <a href="menu_principal.html">Inicio</a>
+            <a href="closet.html">Mi Closet</a>
+            <a href="subir_prenda.html">+ Prenda</a>
+            <a href="generar_outfit.html">Generar</a>
+            <a href="red_social.html">Red Social</a>
+            <a href="#" onclick="logout()">Cerrar Sesion</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px;">
+            <h2>📸 Agregar Prenda</h2>
+            
+            <form id="prendaForm">
+                <div class="form-group">
+                    <label>URL de la imagen</label>
+                    <input type="text" id="imagen_url" class="form-control" placeholder="https://ejemplo.com/mi-prenda.jpg" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Tipo de prenda</label>
+                    <select id="tipo" class="form-control" required>
+                        <option value="superior">👕 Superior (Camisa, Blusa, Playera)</option>
+                        <option value="inferior">👖 Inferior (Pantalón, Falda, Short)</option>
+                        <option value="calzado">👞 Calzado (Zapatos, Tenis, Botas)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Estilo</label>
+                    <select id="estilo" class="form-control" required>
+                        <option value="formal">Formal (Traje, Camisa de vestir)</option>
+                        <option value="casual">Casual (Jeans, Playera)</option>
+                        <option value="deportivo">Deportivo (Tenis, Short deportivo)</option>
+                        <option value="elegante">Elegante (Vestido de gala, Traje fino)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Categoría de color</label>
+                    <select id="color_categoria" class="form-control" required>
+                        <option value="claro">Claro (Blanco, Beige, Pastel)</option>
+                        <option value="oscuro">Oscuro (Negro, Azul marino, Café)</option>
+                        <option value="neutro">Neutro (Gris, Crema)</option>
+                        <option value="llamativo">Llamativo (Rojo, Amarillo, Verde neón)</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Guardar Prenda</button>
+            </form>
+            
+            <div id="mensaje" style="margin-top: 20px;"></div>
+        </div>
+    </div>
+    
+    <script src="js/script.js"></script>
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        const usuarioId = localStorage.getItem('usuarioId');
+        
+        if (!usuarioId) {
+            window.location.href = 'login.html';
+        }
+        
+        document.getElementById('userName').innerHTML = `👤 ${localStorage.getItem('usuarioNombre')} | `;
+        
+        document.getElementById('prendaForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const data = {
+                usuario_id: parseInt(usuarioId),
+                imagen_url: document.getElementById('imagen_url').value,
+                tipo: document.getElementById('tipo').value,
+                estilo: document.getElementById('estilo').value,
+                color_categoria: document.getElementById('color_categoria').value
+            };
+            
+            try {
+                const response = await fetch(`${API_URL}/prendas`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('mensaje').innerHTML = 
+                        '<div class="alert alert-success"> Prenda guardada exitosamente!</div>';
+                    document.getElementById('prendaForm').reset();
+                } else {
+                    document.getElementById('mensaje').innerHTML = 
+                        `<div class="alert alert-danger"> ${result.mensaje || 'Error al guardar'}</div>`;
+                }
+            } catch (error) {
+                document.getElementById('mensaje').innerHTML = 
+                    `<div class="alert alert-danger"> Error: ${error.message}</div>`;
+            }
+        });
+    </script>
+</body>
+</html>
